@@ -1,30 +1,37 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.DurableTask.Client;
 using Microsoft.Extensions.Logging;
-using SpotifyUtilities.Functions.Orchestrators;
-using System.Security.Cryptography;
-using System.Text;
+using Microsoft.Extensions.Options;
+using SpotifyUtilities.Configuration;
+using SpotifyUtilities.Data;
+using SpotifyUtilities.Utilities;
 
 namespace SpotifyUtilities.Functions.Starters;
 
-public static class SpotifyLogin
+public class SpotifyLogin
 {
+    private readonly ILoginAttemptRepository _loginAttemptRepository;
+    private readonly SpotifyOptions _spotifyOptions;
+
+    public SpotifyLogin(ILoginAttemptRepository loginAttemptRepository, IOptions<SpotifyOptions> spotifyOptions)
+    {
+        _loginAttemptRepository = loginAttemptRepository;
+        _spotifyOptions = spotifyOptions.Value;
+    }
 
     [Function("SpotifyLogin")]
-    public static async Task<HttpResponseData> RunSpotifyLogin(
+    public async Task<HttpResponseData> RunSpotifyLogin(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req,
         FunctionContext executionContext)
     {
         ILogger logger = executionContext.GetLogger("SpotifyLogin");
 
-        ValidateEnvironmentVariables();
-        string codeVerifier = GenerateCodeVerifier(64);
-        string loginAttemptId = await StoreCodeVerifier(codeVerifier);
-        string codeChallenge = GenerateCodeChallenge(codeVerifier);
+        string codeVerifier = PkceGenerator.GenerateCodeVerifier();
+        string codeChallenge = PkceGenerator.GenerateCodeChallenge(codeVerifier);
+
+        string loginAttemptId = await _loginAttemptRepository.CreateLoginAttemptAsync(codeVerifier);
+
         var authUrl = BuildAuthUrl(codeChallenge, loginAttemptId);
 
         var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
@@ -32,71 +39,19 @@ public static class SpotifyLogin
         return response;
     }
 
-    private static string GenerateCodeVerifier(int length)
+    private string BuildAuthUrl(string codeChallenge, string loginAttemptId)
     {
-        const string possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        var randomBytes = RandomNumberGenerator.GetBytes(length);
-        return new string([.. randomBytes.Select(x => possible[x % possible.Length])]);
-    }
-
-    private static string GenerateCodeChallenge(string codeVerifier)
-    {
-        byte[] challengeBytes = SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier));
-        return Convert.ToBase64String(challengeBytes)
-            .TrimEnd('=')
-            .Replace('+', '-')
-            .Replace('/', '_');
-    }
-
-    private static async Task<string> StoreCodeVerifier(string codeVerifier)
-    {
-        string loginAttemptId = Guid.NewGuid().ToString();
-        var connectionString = Environment.GetEnvironmentVariable("CosmosDBConnectionString");
-
-        var client = new CosmosClient(connectionString);
-        var database = client.GetDatabase("SpotifyUtility");
-        var container = database.GetContainer("LoginAttempts");
-
-        var loginAttempt = new LoginAttempt(loginAttemptId, codeVerifier);
-        await container.CreateItemAsync(loginAttempt, new PartitionKey(loginAttemptId));
-
-        return loginAttemptId;
-    }
-
-    private static string BuildAuthUrl(string codeChallenge, string loginAttemptId)
-    {
-        var clientId = Environment.GetEnvironmentVariable("SpotifyClientId");
-        var redirectUri = Environment.GetEnvironmentVariable("SpotifyRedirectUri");
-
-        var scope = "playlist-modify-public";
-
         var queryParams = new Dictionary<string, string?>
         {
             ["response_type"] = "code",
-            ["client_id"] = clientId,
-            ["scope"] = scope,
+            ["client_id"] = _spotifyOptions.ClientId,
+            ["scope"] = _spotifyOptions.Scope,
             ["code_challenge_method"] = "S256",
             ["code_challenge"] = codeChallenge,
-            ["redirect_uri"] = redirectUri,
+            ["redirect_uri"] = _spotifyOptions.RedirectUri,
             ["state"] = loginAttemptId
         };
 
-        string authUrl = QueryHelpers.AddQueryString("https://accounts.spotify.com/authorize", queryParams);
-        return authUrl;
+        return QueryHelpers.AddQueryString("https://accounts.spotify.com/authorize", queryParams);
     }
-
-    private static void ValidateEnvironmentVariables()
-    {
-        List<string> requiredVariables = ["SpotifyClientId", "SpotifyRedirectUri", "CosmosDBConnectionString"];
-        requiredVariables.ForEach(ValidateEnvironmentVariable);
-    }
-    private static void ValidateEnvironmentVariable(string name)
-    {
-        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(name)))
-        {
-            throw new InvalidOperationException($"{name} is not set in environment variables.");
-        }
-    }
-
-    public record LoginAttempt(string LoginAttemptId, string CodeVerifier);
 }
