@@ -11,6 +11,6 @@ public static class FetchAlbumsByArtist
     {
         ILogger logger = executionContext.GetLogger("FetchAlbumsByArtist");
         logger.LogInformation("Fetching albums for artist {name}.", input.ArtistId);
-        return new FetchAlbumsByArtistResult(new string[] { new Guid().ToString(), new Guid().ToString() });
+        return new FetchAlbumsByArtistResult([new Guid().ToString(), new Guid().ToString()]);
     }
 }
