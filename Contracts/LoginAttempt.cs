@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace SpotifyUtilities.Contracts;
 
@@ -8,5 +8,5 @@ namespace SpotifyUtilities.Contracts;
 /// <param name="Id">The unique identifier for the login attempt (Cosmos DB "id" field, also used as partition key).</param>
 /// <param name="CodeVerifier">The PKCE code verifier to be used when exchanging the authorization code.</param>
 public record LoginAttempt(
-    [property: JsonPropertyName("id")] string Id,
+    [property: JsonProperty("id")] string Id,
     string CodeVerifier);

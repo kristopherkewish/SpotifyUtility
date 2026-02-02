@@ -2,7 +2,7 @@
   "profiles": {
     "SpotifyUtility": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7156",
+      "commandLineArgs": "--port 7071",
       "launchBrowser": false
     }
   }
