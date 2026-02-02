@@ -17,14 +17,14 @@ public interface ILoginAttemptRepository
     /// <summary>
     /// Retrieves a login attempt by its ID.
     /// </summary>
-    /// <param name="loginAttemptId">The ID of the login attempt to retrieve.</param>
+    /// <param name="id">The ID of the login attempt to retrieve.</param>
     /// <returns>The login attempt if found, null otherwise.</returns>
-    Task<LoginAttempt?> GetLoginAttemptAsync(string loginAttemptId);
+    Task<LoginAttempt?> GetLoginAttemptAsync(string id);
 
     /// <summary>
     /// Deletes a login attempt by its ID.
     /// </summary>
-    /// <param name="loginAttemptId">The ID of the login attempt to delete.</param>
+    /// <param name="id">The ID of the login attempt to delete.</param>
     /// <returns>True if the item was deleted, false if it was not found.</returns>
-    Task<bool> DeleteLoginAttemptAsync(string loginAttemptId);
+    Task<bool> DeleteLoginAttemptAsync(string id);
 }

@@ -30,16 +30,16 @@ public class SpotifyLogin
         string codeVerifier = PkceGenerator.GenerateCodeVerifier();
         string codeChallenge = PkceGenerator.GenerateCodeChallenge(codeVerifier);
 
-        string loginAttemptId = await _loginAttemptRepository.CreateLoginAttemptAsync(codeVerifier);
+        string id = await _loginAttemptRepository.CreateLoginAttemptAsync(codeVerifier);
 
-        var authUrl = BuildAuthUrl(codeChallenge, loginAttemptId);
+        var authUrl = BuildAuthUrl(codeChallenge, id);
 
         var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
         await response.WriteStringAsync(authUrl);
         return response;
     }
 
-    private string BuildAuthUrl(string codeChallenge, string loginAttemptId)
+    private string BuildAuthUrl(string codeChallenge, string id)
     {
         var queryParams = new Dictionary<string, string?>
         {
@@ -49,7 +49,7 @@ public class SpotifyLogin
             ["code_challenge_method"] = "S256",
             ["code_challenge"] = codeChallenge,
             ["redirect_uri"] = _spotifyOptions.RedirectUri,
-            ["state"] = loginAttemptId
+            ["state"] = id
         };
 
         return QueryHelpers.AddQueryString("https://accounts.spotify.com/authorize", queryParams);
