@@ -25,6 +25,7 @@ public class SpotifyLogin
         FunctionContext executionContext)
     {
         ILogger logger = executionContext.GetLogger("SpotifyLogin");
+        logger.LogInformation("Processing Spotify login request.");
 
         string codeVerifier = PkceGenerator.GenerateCodeVerifier();
         string codeChallenge = PkceGenerator.GenerateCodeChallenge(codeVerifier);
@@ -38,6 +39,7 @@ public class SpotifyLogin
             _spotifyOptions.RedirectUri,
             id);
 
+        logger.LogInformation("Generated Spotify authorization URL for login attempt {LoginAttemptId}.", id);
         var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
         await response.WriteStringAsync(authUrl.ToString());
         return response;
