@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -32,26 +31,15 @@ public class SpotifyLogin
 
         string id = await _loginAttemptRepository.CreateLoginAttemptAsync(codeVerifier);
 
-        var authUrl = BuildAuthUrl(codeChallenge, id);
+        var authUrl = new SpotifyAuthUrl(
+            _spotifyOptions.ClientId,
+            _spotifyOptions.Scope,
+            codeChallenge,
+            _spotifyOptions.RedirectUri,
+            id);
 
         var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
-        await response.WriteStringAsync(authUrl);
+        await response.WriteStringAsync(authUrl.ToString());
         return response;
-    }
-
-    private string BuildAuthUrl(string codeChallenge, string id)
-    {
-        var queryParams = new Dictionary<string, string?>
-        {
-            ["response_type"] = "code",
-            ["client_id"] = _spotifyOptions.ClientId,
-            ["scope"] = _spotifyOptions.Scope,
-            ["code_challenge_method"] = "S256",
-            ["code_challenge"] = codeChallenge,
-            ["redirect_uri"] = _spotifyOptions.RedirectUri,
-            ["state"] = id
-        };
-
-        return QueryHelpers.AddQueryString("https://accounts.spotify.com/authorize", queryParams);
     }
 }
