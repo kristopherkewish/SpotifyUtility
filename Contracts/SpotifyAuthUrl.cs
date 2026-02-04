@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace SpotifyUtilities.Utilities;
+namespace SpotifyUtilities.Contracts;
 
 /// <summary>
 /// Represents a Spotify authorization URL with PKCE parameters.

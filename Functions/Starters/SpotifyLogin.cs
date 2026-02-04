@@ -3,6 +3,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SpotifyUtilities.Configuration;
+using SpotifyUtilities.Contracts;
 using SpotifyUtilities.Data;
 using SpotifyUtilities.Utilities;
 
