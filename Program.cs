@@ -24,6 +24,10 @@ builder.Services.AddOptions<CosmosDbOptions>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+// Register HttpClientFactory for making HTTP requests
+builder.Services.AddHttpClient();
+
 builder.Services.AddSingleton<ILoginAttemptRepository, LoginAttemptRepository>();
+builder.Services.AddSingleton<ISpotifyAccessTokenRepository, SpotifyAccessTokenRepository>();
 
 builder.Build().Run();

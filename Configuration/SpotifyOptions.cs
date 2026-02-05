@@ -25,4 +25,10 @@ public class SpotifyOptions
     /// The scopes to request during authorization.
     /// </summary>
     public string Scope { get; set; } = "playlist-modify-public";
+
+    /// <summary>
+    /// The URI to redirect to after successful login (frontend application).
+    /// </summary>
+    [Required]
+    public required string FrontendRedirectUri { get; set; }
 }

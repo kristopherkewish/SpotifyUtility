@@ -24,4 +24,9 @@ public class CosmosDbOptions
     /// The container name for login attempts.
     /// </summary>
     public string LoginAttemptsContainer { get; set; } = "LoginAttempts";
+
+    /// <summary>
+    /// The container name for Spotify access tokens.
+    /// </summary>
+    public string AccessTokensContainer { get; set; } = "AccessTokens";
 }

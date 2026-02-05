@@ -5,15 +5,15 @@ namespace SpotifyUtilities.Contracts;
 /// <summary>
 /// Represents a Spotify authorization URL with PKCE parameters.
 /// </summary>
-public class SpotifyAuthUrl(string clientId, string scope, string codeChallenge, string redirectUri, string state)
+public record SpotifyAuthUrl(
+    string ClientId,
+    string Scope,
+    string CodeChallenge,
+    string RedirectUri,
+    string State
+)
 {
-    private const string AuthorizeEndpoint = "https://accounts.spotify.com/authorize";
-
-    public string ClientId { get; } = clientId;
-    public string Scope { get; } = scope;
-    public string CodeChallenge { get; } = codeChallenge;
-    public string RedirectUri { get; } = redirectUri;
-    public string State { get; } = state;
+    public const string AuthorizeEndpoint = "https://accounts.spotify.com/authorize";
 
     public override string ToString()
     {
