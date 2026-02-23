@@ -1,0 +1,59 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 3rem;
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  color: var(--spotify-green);
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--spotify-text);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.successBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(29, 185, 84, 0.15);
+  color: var(--spotify-green);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border-radius: 500px;
+  padding: 0.5rem 1.25rem;
+}
+
+.checkmark {
+  font-size: 1rem;
+}
+
+.description {
+  font-size: 1rem;
+  color: var(--spotify-text-muted);
+  max-width: 480px;
+  line-height: 1.6;
+}
