@@ -9,7 +9,9 @@ export default function DashboardPage() {
       </div>
       <div className={styles.content}>
         <div className={styles.successBadge}>
-          <span className={styles.checkmark} aria-hidden="true">✓</span>
+          <span className={styles.checkmark} aria-hidden="true">
+            ✓
+          </span>
           Account connected
         </div>
         <p className={styles.description}>

@@ -15,7 +15,9 @@ export default function HomePage() {
       // Redirect the browser to Spotify's authorization page.
       window.location.href = authUrl;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unexpected error occurred.");
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred.",
+      );
       setLoading(false);
     }
   }

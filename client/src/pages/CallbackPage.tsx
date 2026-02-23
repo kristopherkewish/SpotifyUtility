@@ -43,7 +43,7 @@ export default function CallbackPage() {
       })
       .catch((err: unknown) => {
         setErrorMessage(
-          err instanceof Error ? err.message : "An unexpected error occurred."
+          err instanceof Error ? err.message : "An unexpected error occurred.",
         );
         setStatus("error");
       });
@@ -60,13 +60,17 @@ export default function CallbackPage() {
         )}
         {status === "success" && (
           <>
-            <div className={styles.successIcon} aria-hidden="true">✓</div>
+            <div className={styles.successIcon} aria-hidden="true">
+              ✓
+            </div>
             <p className={styles.message}>Signed in! Redirecting…</p>
           </>
         )}
         {status === "error" && (
           <>
-            <div className={styles.errorIcon} aria-hidden="true">✕</div>
+            <div className={styles.errorIcon} aria-hidden="true">
+              ✕
+            </div>
             <p className={styles.message}>Sign-in failed</p>
             <p className={styles.errorDetail}>{errorMessage}</p>
             <button

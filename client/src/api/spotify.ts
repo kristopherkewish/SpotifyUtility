@@ -29,9 +29,12 @@ export async function initiateSpotifyLogin(): Promise<string> {
  */
 export async function exchangeAuthorizationCode(
   code: string,
-  state: string
+  state: string,
 ): Promise<string | null> {
-  const url = new URL(`${API_BASE}/api/SpotifyLoginCallback`, window.location.origin);
+  const url = new URL(
+    `${API_BASE}/api/SpotifyLoginCallback`,
+    window.location.origin,
+  );
   url.searchParams.set("code", code);
   url.searchParams.set("state", state);
 
@@ -41,7 +44,7 @@ export async function exchangeAuthorizationCode(
 
   if (!res.ok) {
     throw new Error(
-      `Authorization code exchange failed: ${res.status} ${res.statusText}`
+      `Authorization code exchange failed: ${res.status} ${res.statusText}`,
     );
   }
 
