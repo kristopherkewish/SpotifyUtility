@@ -27,7 +27,7 @@ public class SpotifyLoginCallback
 
     [Function("SpotifyLoginCallback")]
     public async Task<HttpResponseData> RunSpotifyLoginCallback(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req,
         FunctionContext executionContext)
     {
         ILogger logger = executionContext.GetLogger("SpotifyLoginCallback");
@@ -47,7 +47,7 @@ public class SpotifyLoginCallback
         var accessToken = await _spotifyAccessTokenService.ExchangeAuthorizationCodeAsync(tokenRequest);
         await _spotifyAccessTokenRepository.SaveAccessTokenAsync(accessToken);
 
-        var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
+        var response = req.CreateResponse(System.Net.HttpStatusCode.Redirect);
         response.Headers.Add("Location", _spotifyOptions.FrontendRedirectUri);
         return response;
     }

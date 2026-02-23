@@ -22,32 +22,3 @@ export async function initiateSpotifyLogin(): Promise<string> {
   return authUrl;
 }
 
-/**
- * Exchanges the authorization code returned by Spotify for an access token.
- * Returns the value of the Location header set by the backend (the URL to
- * navigate to after a successful login).
- */
-export async function exchangeAuthorizationCode(
-  code: string,
-  state: string,
-): Promise<string | null> {
-  const url = new URL(
-    `${API_BASE}/api/SpotifyLoginCallback`,
-    window.location.origin,
-  );
-  url.searchParams.set("code", code);
-  url.searchParams.set("state", state);
-
-  const res = await fetch(url.toString(), {
-    method: "POST",
-  });
-
-  if (!res.ok) {
-    throw new Error(
-      `Authorization code exchange failed: ${res.status} ${res.statusText}`,
-    );
-  }
-
-  // The backend sets a Location header with the frontend redirect URI.
-  return res.headers.get("Location");
-}
