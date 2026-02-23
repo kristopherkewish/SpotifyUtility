@@ -2,10 +2,10 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using SpotifyUtilities.Configuration;
 using SpotifyUtilities.Contracts;
 using SpotifyUtilities.Data;
+using SpotifyUtilities.Services;
 using SpotifyUtilities.Utilities;
 
 namespace SpotifyUtilities.Functions.Starters;
@@ -14,15 +14,15 @@ public class SpotifyLoginCallback
 {
     private readonly ILoginAttemptRepository _loginAttemptRepository;
     private readonly SpotifyOptions _spotifyOptions;
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ISpotifyAccessTokenRepository _spotifyAccessTokenRepository;
+    private readonly ISpotifyAccessTokenService _spotifyAccessTokenService;
 
-    public SpotifyLoginCallback(ILoginAttemptRepository loginAttemptRepository, IOptions<SpotifyOptions> spotifyOptions, IHttpClientFactory httpClientFactory, ISpotifyAccessTokenRepository spotifyAccessTokenRepository)
+    public SpotifyLoginCallback(ILoginAttemptRepository loginAttemptRepository, IOptions<SpotifyOptions> spotifyOptions, ISpotifyAccessTokenRepository spotifyAccessTokenRepository, ISpotifyAccessTokenService spotifyAccessTokenService)
     {
         _loginAttemptRepository = loginAttemptRepository;
         _spotifyOptions = spotifyOptions.Value;
-        _httpClientFactory = httpClientFactory;
         _spotifyAccessTokenRepository = spotifyAccessTokenRepository;
+        _spotifyAccessTokenService = spotifyAccessTokenService;
     }
 
     [Function("SpotifyLoginCallback")]
@@ -44,17 +44,7 @@ public class SpotifyLoginCallback
             _spotifyOptions.ClientId,
             loginAttempt.CodeVerifier);
 
-        // extract this to a separate service class 
-        var client = _httpClientFactory.CreateClient();
-        var tokenResponse = await client.PostAsync(SpotifyAccessTokenRequest.TokenEndpoint, tokenRequest.ToRequestBody());
-        tokenResponse.EnsureSuccessStatusCode();
-        var json = await tokenResponse.Content.ReadAsStringAsync();
-        var accessTokenResponse = JsonConvert.DeserializeObject<SpotifyAccessTokenResponse>(json) ?? throw new Exception("Failed to deserialize Spotify access token response.");
-
-        var accessToken = new SpotifyAccessToken(
-            accessTokenResponse.AccessToken,
-            DateTime.UtcNow.AddSeconds(accessTokenResponse.ExpiresIn),
-            accessTokenResponse.RefreshToken);
+        var accessToken = await _spotifyAccessTokenService.ExchangeAuthorizationCodeAsync(tokenRequest);
         await _spotifyAccessTokenRepository.SaveAccessTokenAsync(accessToken);
 
         var response = req.CreateResponse(System.Net.HttpStatusCode.OK);

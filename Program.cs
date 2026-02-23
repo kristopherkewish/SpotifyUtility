@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SpotifyUtilities.Configuration;
 using SpotifyUtilities.Data;
+using SpotifyUtilities.Services;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
@@ -29,5 +30,6 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<ILoginAttemptRepository, LoginAttemptRepository>();
 builder.Services.AddSingleton<ISpotifyAccessTokenRepository, SpotifyAccessTokenRepository>();
+builder.Services.AddSingleton<ISpotifyAccessTokenService, SpotifyAccessTokenService>();
 
 builder.Build().Run();
