@@ -21,4 +21,3 @@ export async function initiateSpotifyLogin(): Promise<string> {
   const authUrl = await res.text();
   return authUrl;
 }
-
