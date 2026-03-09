@@ -1,0 +1,36 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --spotify-green: #1db954;
+  --spotify-green-hover: #1ed760;
+  --spotify-black: #121212;
+  --spotify-dark: #181818;
+  --spotify-card: #282828;
+  --spotify-text: #ffffff;
+  --spotify-text-muted: #b3b3b3;
+  --spotify-error: #f15e6c;
+  --spotify-error-bg: rgba(241, 94, 108, 0.12);
+
+  font-family: "Circular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--spotify-text);
+  background-color: var(--spotify-black);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(ellipse at top, #1a3a2a 0%, var(--spotify-black) 60%);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
