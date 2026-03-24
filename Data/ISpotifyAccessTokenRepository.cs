@@ -21,6 +21,12 @@ public interface ISpotifyAccessTokenRepository
     Task<SpotifyAccessToken?> GetAccessTokenAsync(string accessToken);
 
     /// <summary>
+    /// Retrieves the most recently added Spotify access token.
+    /// </summary>
+    /// <returns>The most recent access token record if any exist, null otherwise.</returns>
+    Task<SpotifyAccessToken?> GetMostRecentAccessTokenAsync();
+
+    /// <summary>
     /// Deletes a Spotify access token by its value.
     /// </summary>
     /// <param name="accessToken">The access token string to delete.</param>

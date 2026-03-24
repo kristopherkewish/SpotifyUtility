@@ -9,7 +9,7 @@ namespace SpotifyUtilities.Functions.Orchestrators;
 public static class MainOrchestrator
 {
     [Function(nameof(MainOrchestrator))]
-    public static async Task<FetchAlbumsByArtistResult> RunOrchestrator(
+    public static async Task RunOrchestrator(
         [OrchestrationTrigger] TaskOrchestrationContext context)
     {
         ILogger logger = context.CreateReplaySafeLogger(nameof(MainOrchestrator));
@@ -17,12 +17,25 @@ public static class MainOrchestrator
         logger.LogInformation("Saying hello.");
 
         // Replace name and input with values relevant for your Durable Functions Activity
-        var output = await context.CallActivityAsync<FetchAlbumsByArtistResult>(
-            nameof(FetchAlbumsByArtist.RunFetchAlbumsByArtist), 
-            new FetchAlbumsByArtistInput(Guid.Empty.ToString(), 0)
-        );
+        // Test the activity function
+        List<string> albumIds = [];
+        var artistId = "6L7a6wPGpvLtTwOsMLnF1z";
+        var total = 0;
 
-        // returns ["Hello Tokyo!", "Hello Seattle!", "Hello London!"]
-        return output;
+        for (int offset = 0; offset <= total; offset += 10)
+        {
+            var input = new FetchAlbumsByArtistInput(artistId, offset);
+
+            var output = await context.CallActivityAsync<FetchAlbumsByArtistResult>(
+                nameof(FetchAlbumsByArtist),
+                input
+            );
+
+            albumIds.AddRange(output.AlbumIds);
+            total = output.Total;
+        }
+
+        logger.LogInformation("Fetched {count} albums for artist {artistId}.", albumIds.Count, artistId);
+        albumIds.ForEach(albumId => logger.LogInformation("Album ID: {albumId}", albumId));
     }
 }

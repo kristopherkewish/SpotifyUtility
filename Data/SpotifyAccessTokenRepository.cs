@@ -50,6 +50,24 @@ public class SpotifyAccessTokenRepository : ISpotifyAccessTokenRepository
     }
 
     /// <summary>
+    /// Retrieves the most recently added Spotify access token.
+    /// </summary>
+    /// <returns>The most recent access token record if any exist, null otherwise.</returns>
+    public async Task<SpotifyAccessToken?> GetMostRecentAccessTokenAsync()
+    {
+        var query = new QueryDefinition("SELECT TOP 1 * FROM c ORDER BY c._ts DESC");
+        using var iterator = _container.GetItemQueryIterator<SpotifyAccessToken>(query);
+
+        if (iterator.HasMoreResults)
+        {
+            var response = await iterator.ReadNextAsync();
+            return response.FirstOrDefault();
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Deletes a Spotify access token by its value.
     /// </summary>
     /// <param name="accessToken">The access token string to delete.</param>

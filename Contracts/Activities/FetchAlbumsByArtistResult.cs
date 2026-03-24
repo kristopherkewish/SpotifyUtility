@@ -1,5 +1,6 @@
 namespace SpotifyUtility.Contracts.Activities;
 
 public record FetchAlbumsByArtistResult(
-    string[] AlbumIds
+    List<string> AlbumIds,
+    int Total
 );
