@@ -14,13 +14,14 @@ public static class MainOrchestrator
     {
         ILogger logger = context.CreateReplaySafeLogger(nameof(MainOrchestrator));
 
-        logger.LogInformation("Saying hello.");
+        logger.LogInformation("Starting orchestrator.");
 
         // Replace name and input with values relevant for your Durable Functions Activity
         // Test the activity function
         List<string> albumIds = [];
         var artistId = "6L7a6wPGpvLtTwOsMLnF1z";
         var total = 0;
+        var jobId = new Guid().ToString();
 
         for (int offset = 0; offset <= total; offset += 10)
         {
