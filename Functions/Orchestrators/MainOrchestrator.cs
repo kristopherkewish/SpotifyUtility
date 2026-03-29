@@ -19,7 +19,7 @@ public static class MainOrchestrator
         List<string> albumIds = [];
         var artistId = "6L7a6wPGpvLtTwOsMLnF1z";
         var total = 0;
-        var jobId = new Guid().ToString();
+        var jobId = context.NewGuid().ToString();
 
         // initial call to get total number of albums for the artist
         var initialInput = new FetchAlbumsByArtistInput(artistId, 0);
@@ -49,6 +49,10 @@ public static class MainOrchestrator
         {
             albumIds.AddRange(result.AlbumIds);
         }
+
+        // persist the album ids to the database
+        var persistInput = new PersistArtistAlbumsInput(jobId, artistId, albumIds);
+        await context.CallActivityAsync(nameof(PersistArtistAlbums), persistInput);
 
         logger.LogInformation("Fetched {count} albums for artist {artistId}.", albumIds.Count, artistId);
     }

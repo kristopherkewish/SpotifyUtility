@@ -29,4 +29,9 @@ public class CosmosDbOptions
     /// The container name for Spotify access tokens.
     /// </summary>
     public string AccessTokensContainer { get; set; } = "AccessTokens";
+
+    /// <summary>
+    /// The container name for artist albums.
+    /// </summary>
+    public string ArtistAlbumsContainer { get; set; } = "ArtistAlbums";
 }

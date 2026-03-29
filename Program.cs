@@ -31,5 +31,6 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<ILoginAttemptRepository, LoginAttemptRepository>();
 builder.Services.AddSingleton<ISpotifyAccessTokenRepository, SpotifyAccessTokenRepository>();
 builder.Services.AddSingleton<ISpotifyAccessTokenService, SpotifyAccessTokenService>();
+builder.Services.AddSingleton<IArtistAlbumRepository, ArtistAlbumRepository>();
 
 builder.Build().Run();
