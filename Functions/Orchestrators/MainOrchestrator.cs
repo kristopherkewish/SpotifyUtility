@@ -16,27 +16,40 @@ public static class MainOrchestrator
 
         logger.LogInformation("Starting orchestrator.");
 
-        // Replace name and input with values relevant for your Durable Functions Activity
-        // Test the activity function
         List<string> albumIds = [];
         var artistId = "6L7a6wPGpvLtTwOsMLnF1z";
         var total = 0;
         var jobId = new Guid().ToString();
 
-        for (int offset = 0; offset <= total; offset += 10)
+        // initial call to get total number of albums for the artist
+        var initialInput = new FetchAlbumsByArtistInput(artistId, 0);
+        var initialOutput = await context.CallActivityAsync<FetchAlbumsByArtistResult>(
+            nameof(FetchAlbumsByArtist),
+            initialInput
+        );
+        albumIds.AddRange(initialOutput.AlbumIds);
+        total = initialOutput.Total;
+
+        // parallelize the rest of the calls
+        var tasks = new List<Task<FetchAlbumsByArtistResult>>();
+
+        for (int offset = 10; offset <= total; offset += 10)
         {
             var input = new FetchAlbumsByArtistInput(artistId, offset);
 
-            var output = await context.CallActivityAsync<FetchAlbumsByArtistResult>(
+            tasks.Add(context.CallActivityAsync<FetchAlbumsByArtistResult>(
                 nameof(FetchAlbumsByArtist),
                 input
-            );
+            ));
+        }
 
-            albumIds.AddRange(output.AlbumIds);
-            total = output.Total;
+        var results = await Task.WhenAll(tasks);
+
+        foreach (var result in results)
+        {
+            albumIds.AddRange(result.AlbumIds);
         }
 
         logger.LogInformation("Fetched {count} albums for artist {artistId}.", albumIds.Count, artistId);
-        albumIds.ForEach(albumId => logger.LogInformation("Album ID: {albumId}", albumId));
     }
 }
