@@ -16,7 +16,7 @@ public static class MainOrchestrator
 
         logger.LogInformation("Starting orchestrator.");
 
-        List<string> albumIds = [];
+        List<ArtistAlbum> artistAlbums = [];
         var artistId = "6L7a6wPGpvLtTwOsMLnF1z";
         var total = 0;
         var jobId = context.NewGuid().ToString();
@@ -27,7 +27,7 @@ public static class MainOrchestrator
             nameof(FetchAlbumsByArtist),
             initialInput
         );
-        albumIds.AddRange(initialOutput.AlbumIds);
+        artistAlbums.AddRange(initialOutput.ArtistAlbums);
         total = initialOutput.Total;
 
         // parallelize the rest of the calls
@@ -47,13 +47,13 @@ public static class MainOrchestrator
 
         foreach (var result in results)
         {
-            albumIds.AddRange(result.AlbumIds);
+            artistAlbums.AddRange(result.ArtistAlbums);
         }
 
         // persist the album ids to the database
         var persistInput = new PersistArtistAlbumsInput(jobId, artistId, albumIds);
         await context.CallActivityAsync(nameof(PersistArtistAlbums), persistInput);
 
-        logger.LogInformation("Fetched {count} albums for artist {artistId}.", albumIds.Count, artistId);
+        logger.LogInformation("Fetched {count} albums for artist {artistId}.", artistAlbums.Count, artistId);
     }
 }

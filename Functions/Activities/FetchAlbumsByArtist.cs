@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Web;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using System.Text.Json.Serialization;
 using SpotifyUtilities.Data;
 using SpotifyUtility.Contracts.Activities;
 
@@ -42,8 +43,8 @@ public class FetchAlbumsByArtist(IHttpClientFactory httpClientFactory, ISpotifyA
         var response = await httpClient.GetFromJsonAsync<SpotifyArtistAlbumsResponseDTO>(uri);
 
         // convert the result to a list of album IDs
-        var albumIds = response?.Items?.Select(album => album.Id).ToList() ?? [];
-        return new FetchAlbumsByArtistResult(albumIds, response?.Total ?? 0);
+        var artistAlbums = response?.Items?.Select(album => new ArtistAlbum(album.Id, album.ReleaseDate)).ToList() ?? [];
+        return new FetchAlbumsByArtistResult(artistAlbums, response?.Total ?? 0);
     }
 
     private sealed record SpotifyArtistAlbumsResponseDTO(
@@ -53,6 +54,7 @@ public class FetchAlbumsByArtist(IHttpClientFactory httpClientFactory, ISpotifyA
     );
 
     private sealed record SpotifyAlbumDTO(
-        string Id
+        string Id,
+        [property: JsonPropertyName("release_date")] string ReleaseDate
     );
 }
