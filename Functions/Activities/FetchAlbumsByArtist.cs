@@ -43,7 +43,7 @@ public class FetchAlbumsByArtist(IHttpClientFactory httpClientFactory, ISpotifyA
         var response = await httpClient.GetFromJsonAsync<SpotifyArtistAlbumsResponseDTO>(uri);
 
         // convert the result to a list of album IDs
-        var artistAlbums = response?.Items?.Select(album => new ArtistAlbum(album.Id, album.ReleaseDate)).ToList() ?? [];
+        var artistAlbums = response?.Items?.Select(album => new SpotifyAlbum(album.Id, album.ReleaseDate)).ToList() ?? [];
         return new FetchAlbumsByArtistResult(artistAlbums, response?.Total ?? 0);
     }
 

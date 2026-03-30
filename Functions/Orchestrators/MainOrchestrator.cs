@@ -1,6 +1,7 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask;
 using Microsoft.Extensions.Logging;
+using SpotifyUtilities.Contracts;
 using SpotifyUtilities.Functions.Activities;
 using SpotifyUtility.Contracts.Activities;
 
@@ -16,7 +17,7 @@ public static class MainOrchestrator
 
         logger.LogInformation("Starting orchestrator.");
 
-        List<ArtistAlbum> artistAlbums = [];
+        List<SpotifyAlbum> artistAlbums = [];
         var artistId = "6L7a6wPGpvLtTwOsMLnF1z";
         var total = 0;
         var jobId = context.NewGuid().ToString();
@@ -51,7 +52,7 @@ public static class MainOrchestrator
         }
 
         // persist the album ids to the database
-        var persistInput = new PersistArtistAlbumsInput(jobId, artistId, albumIds);
+        var persistInput = new PersistArtistAlbumsInput(jobId, artistId, artistAlbums);
         await context.CallActivityAsync(nameof(PersistArtistAlbums), persistInput);
 
         logger.LogInformation("Fetched {count} albums for artist {artistId}.", artistAlbums.Count, artistId);

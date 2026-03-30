@@ -17,10 +17,9 @@ public class ArtistAlbumRepository : IArtistAlbumRepository
         _container = database.GetContainer(config.ArtistAlbumsContainer);
     }
 
-    public async Task<string> CreateArtistAlbumAsync(string jobId, string artistId, List<string> albumIds)
+    public async Task<string> CreateArtistAlbumAsync(ArtistAlbum artistAlbum)
     {
-        var artistAlbum = new ArtistAlbum(jobId, artistId, albumIds);
-        await _container.CreateItemAsync(artistAlbum, new PartitionKey(jobId));
-        return jobId;
+        await _container.CreateItemAsync(artistAlbum, new PartitionKey(artistAlbum.JobId));
+        return artistAlbum.JobId;
     }
 }
