@@ -7,5 +7,5 @@ public record FetchAlbumsByArtistResult(
 
 public record ArtistAlbum(
     string AlbumId,
-    string ReleaseDate
+    int ReleaseYear
 );
