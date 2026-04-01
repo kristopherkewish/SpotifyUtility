@@ -22,7 +22,10 @@ public class FetchAlbumsByArtist(IHttpClientFactory httpClientFactory, ISpotifyA
 
         // build the fetch URL
         const int LIMIT = 10;
-        const string INCLUDE_GROUPS = "album,single,appears_on,compilation";
+        // the below causes an issue where the artist can appear on an album, and then later all of the tracks on that album are downloaded even if the artist is not on the track
+        // causes the number of tracks to download to balloon significantly
+        // const string INCLUDE_GROUPS = "album,single,appears_on,compilation";
+        const string INCLUDE_GROUPS = "album,single";
 
         string baseUrl = $"https://api.spotify.com/v1/artists/{input.ArtistId}/albums";
 
