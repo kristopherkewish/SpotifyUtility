@@ -82,6 +82,16 @@ public class MainOrchestrator(IEqualityComparer<AlbumTracks> albumTrackComparer)
             }
         }
 
+        var artistName = await context.CallActivityAsync<string>(
+            nameof(FetchArtist),
+            artistId
+        );
+
+        var playlistId = await context.CallActivityAsync<string>(
+            nameof(CreatePlaylist),
+            $"{artistName} {yearStart}-{yearEnd}"
+        );
+
         logger.LogInformation("Fetched {count} albums for artist {artistId}.", filteredAlbums.Count, artistId);
         logger.LogInformation("Fetched {count} tracks for artist {artistId}.", tracksResults.Count, artistId);
     }
