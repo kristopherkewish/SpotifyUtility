@@ -6,10 +6,12 @@ using SpotifyUtility.Contracts.Activities;
 
 namespace SpotifyUtilities.Functions.Orchestrators;
 
-public static class MainOrchestrator
+public class MainOrchestrator(IEqualityComparer<AlbumTracks> albumTrackComparer)
 {
+    private readonly IEqualityComparer<AlbumTracks> _albumTrackComparer = albumTrackComparer;
+
     [Function(nameof(MainOrchestrator))]
-    public static async Task RunOrchestrator(
+    public async Task RunOrchestrator(
         [OrchestrationTrigger] TaskOrchestrationContext context)
     {
         ILogger logger = context.CreateReplaySafeLogger(nameof(MainOrchestrator));
@@ -54,7 +56,7 @@ public static class MainOrchestrator
 
         var filteredAlbums = artistAlbums.Where(album => album.ReleaseYear >= yearStart && album.ReleaseYear <= yearEnd).ToList();
 
-        List<AlbumTracks> tracksResults = [];
+        var tracksResults = new HashSet<AlbumTracks>(_albumTrackComparer);
 
         // Parallelize calls to fetch album tracks in batches of 10, prevent hitting Spotify API limits
         foreach(var albumChunk in filteredAlbums.Chunk(10))
@@ -73,7 +75,10 @@ public static class MainOrchestrator
             
             foreach (var albumTracks in albumChunkResults)
             {
-                tracksResults.AddRange(albumTracks);
+                foreach (var track in albumTracks)
+                {
+                    tracksResults.Add(track);
+                }
             }
         }
 

@@ -5,6 +5,8 @@ using Microsoft.Extensions.Hosting;
 using SpotifyUtilities.Configuration;
 using SpotifyUtilities.Data;
 using SpotifyUtilities.Services;
+using SpotifyUtilities.Utilities;
+using SpotifyUtility.Contracts.Activities;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
@@ -31,5 +33,6 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<ILoginAttemptRepository, LoginAttemptRepository>();
 builder.Services.AddSingleton<ISpotifyAccessTokenRepository, SpotifyAccessTokenRepository>();
 builder.Services.AddSingleton<ISpotifyAccessTokenService, SpotifyAccessTokenService>();
+builder.Services.AddTransient<IEqualityComparer<AlbumTracks>, AlbumTrackComparer>();
 
 builder.Build().Run();
